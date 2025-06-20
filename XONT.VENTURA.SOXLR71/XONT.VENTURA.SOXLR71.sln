@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9764582B-B8C1-45CD-B9C2-8AB419683D5A}"
+	ProjectSection(SolutionItems) = preProject
+		SOXLR71-ModificationLog.txt = SOXLR71-ModificationLog.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XONT.VENTURA.SOXLR71.DAL", "XONT.VENTURA.SOXLR71.DAL\XONT.VENTURA.SOXLR71.DAL.csproj", "{6F4AD475-65BB-445B-1874-01CFB45425D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XONT.VENTURA.SOXLR71.DOMAIN", "XONT.VENTURA.SOXLR71.DOMAIN\XONT.VENTURA.SOXLR71.DOMAIN.csproj", "{3A4C0C10-DF5D-13DD-5262-3B158C1C1A47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XONT.VENTURA.SOXLR71.BLL", "XONT.VENTURA.SOXLR71.BLL\XONT.VENTURA.SOXLR71.BLL.csproj", "{D601F4F9-94C2-35C1-836B-1CFD3908E7CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XONT.VENTURA.SOXLR71.WEB", "XONT.VENTURA.SOXLR71.WEB\XONT.VENTURA.SOXLR71.WEB.csproj", "{2F3E4B55-8A4C-26B7-B2EF-378D8DD42AF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F4AD475-65BB-445B-1874-01CFB45425D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F4AD475-65BB-445B-1874-01CFB45425D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F4AD475-65BB-445B-1874-01CFB45425D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F4AD475-65BB-445B-1874-01CFB45425D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A4C0C10-DF5D-13DD-5262-3B158C1C1A47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A4C0C10-DF5D-13DD-5262-3B158C1C1A47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A4C0C10-DF5D-13DD-5262-3B158C1C1A47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A4C0C10-DF5D-13DD-5262-3B158C1C1A47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D601F4F9-94C2-35C1-836B-1CFD3908E7CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D601F4F9-94C2-35C1-836B-1CFD3908E7CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D601F4F9-94C2-35C1-836B-1CFD3908E7CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D601F4F9-94C2-35C1-836B-1CFD3908E7CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F3E4B55-8A4C-26B7-B2EF-378D8DD42AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F3E4B55-8A4C-26B7-B2EF-378D8DD42AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F3E4B55-8A4C-26B7-B2EF-378D8DD42AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F3E4B55-8A4C-26B7-B2EF-378D8DD42AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C78A0B3-16B8-4648-8AC1-87E42B17958A}
+	EndGlobalSection
+EndGlobal

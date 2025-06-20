@@ -1,0 +1,97 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>XONT.VENTURA.SOXLR71</RootNamespace>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetFrameworks>net8.0</TargetFrameworks>
+    <AssemblyTitle>XONT.VENTURA.SOXLR71.BLL</AssemblyTitle>
+    <Company>X-ONT SOFTWARE %28PVT%29 LTD</Company>
+    <Product>XONT.VENTURA.SOXLR71.BLL</Product>
+    <Copyright>Copyright © X-ONT SOFTWARE 2012</Copyright>
+    <AssemblyVersion>3.0.0.1</AssemblyVersion>
+    <FileVersion>3.0.0.1</FileVersion>
+	<ReferencePath>..\..\..\..\..\..\XONT\XontResource\bin</ReferencePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Update="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Update="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="XONT.Common.Message.MessageCreate, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Common.Message.MessageCreate.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.AppConsole.Domain, Version=2.0.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.AppConsole.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.ConvertDateTime, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.ConvertDateTime.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.GridViewControls, Version=2.46.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.GridViewControls.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.Prompt.BLL, Version=1.0.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.Prompt.BLL.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.Prompt.DAL, Version=1.0.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.Prompt.DAL.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.Prompt.Domain, Version=1.0.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.Prompt.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.SendMail.BLL, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.SendMail.BLL.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.SendMail.Domain, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.SendMail.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.Common.SendMail.Web, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.Common.SendMail.Web.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="EPPlus" />
+    <PackageReference Include="System.Data.DataSetExtensions" />
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XONT.VENTURA.SOXLR71.DAL\XONT.VENTURA.SOXLR71.DAL.csproj" />
+  </ItemGroup>
+</Project>

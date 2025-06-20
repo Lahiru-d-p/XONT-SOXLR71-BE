@@ -1,0 +1,30 @@
+{
+  "profiles": {
+    "XONT.VENTURA.SOXLR71.WEB": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "SOXLR71/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7100;http://localhost:5100"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "SOXLR71/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:65292",
+      "sslPort": 44400
+    }
+  }
+}

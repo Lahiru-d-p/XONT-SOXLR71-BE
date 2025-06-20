@@ -1,0 +1,157 @@
+<div [ngBusy]="busy"></div>
+<xont-ventura-message-prompt #msgPrompt></xont-ventura-message-prompt>
+<xont-ventura-message-prompt [id]="'VATStatusAlert'" messageType="alert" #VATStatusAlert></xont-ventura-message-prompt>
+
+<form #form1="ngForm" (keydown.enter)="$event.preventDefault()">
+    <div>
+        <table>
+            <tr>
+                <td width="120">
+                    <span id="lblSelection" class="Captionstyle">Selection</span>
+                </td>
+                <td>
+                    <fieldset>
+                        <span class="Captionstyle" style="padding-right: 8px;">
+                            <input id="optDistributor" type="radio" name="optSelection" value="Distributor"
+                                    (change)="selection.DistributorFlag = true; selection.TerritoryFlag = false; selection.TerritoryCode = ''; selection.TerritoryName = '' "
+                                    [checked]="selection.DistributorFlag">
+                            <label for="optDistributor">Distributor</label>
+                        </span>
+                        <span class="Captionstyle">
+                            <input id="optTerritory" type="radio" name="optSelection" value="Territory" 
+                                    (change)="selection.TerritoryFlag = true; selection.DistributorFlag = false; selection.DistributorCode = ''; selection.DistributorName = '' "
+                                    [checked]="selection.TerritoryFlag">
+                            <label for="optTerritory">Territory</label>
+                        </span>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <table>
+            <tr *ngIf="selection.DistributorFlag">
+                <td width="120">
+                    <span id="lblDistributor" class="Captionstyle">Distributor</span>
+                </td>
+                <td>
+                    <xont-ventura-list-prompt name="lpmtDistributor" id="lpmtDistributor"
+                                              #lpmtDistributor
+                                              [maxLengths]="[10,40]"
+                                              [inputWidths]="[120,350]"
+                                              [gridHeaders]="['Code','Description']"
+                                              [gridFields]="['DistributorCode','DistributorName']"
+                                              [mandatory]="selection.DistributorFlag"
+                                              [strict]="false"
+                                              (onDataBind)="lpmtDistributor_DataBind()"
+                                              [(ngModel)]="selection"
+                                              [modelProps]="['DistributorCode','DistributorName']"
+                                              [dataFields]="['DistributorCode','DistributorName']">
+                    </xont-ventura-list-prompt>
+                </td>
+            </tr>
+            <tr *ngIf="selection.TerritoryFlag">
+                <td width="120">
+                    <span id="lblTerritory" class="Captionstyle">Territory</span>
+                </td>
+                <td>
+                    <xont-ventura-list-prompt name="lpmtTerritory" id="lpmtTerritory"
+                                              #lpmtTerritory
+                                              [maxLengths]="[10,40]"
+                                              [inputWidths]="[120,350]"
+                                              [gridHeaders]="['Code','Description']"
+                                              [gridFields]="['TerritoryCode','TerritoryName']"
+                                              [mandatory]="selection.TerritoryFlag"
+                                              [strict]="false"
+                                              (onDataBind)="lpmtTerritory_DataBind()"
+                                              [(ngModel)]="selection"
+                                              [modelProps]="['TerritoryCode','TerritoryName']"
+                                              [dataFields]="['TerritoryCode','TerritoryName']">
+                    </xont-ventura-list-prompt>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <table>
+            <tr>
+                <td width="120">
+                    <span id="lblDateFrom" class="Captionstyle">From Date</span>
+                </td>
+                <td>
+                    <xont-ventura-date-controller id="dtcFromDate" name="dtcFromDate" width="90" required
+                                                  [(ngModel)]="selection.FromDateShow">
+                    </xont-ventura-date-controller>
+                </td>
+                <td width="17">
+                    <span id="lblDateTo" class="Captionstyle">To</span>
+                </td>
+                <td>
+                    <xont-ventura-date-controller id="dtcToDate" name="dtcToDate" width="90" required
+                                                  [greaterThan]="selection.FromDateShow"
+                                                  [(ngModel)]="selection.ToDateShow">
+                    </xont-ventura-date-controller>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <hr>
+
+    <table>
+        <tr>
+            <td style="width:120px;">
+                <span id="lblVATCheck" class="Captionstyle">VAT Status</span>
+            </td>
+            <td colspan="4">
+                <fieldset class="VATStatus">
+                    <span class="Captionstyle">
+                        <input id="optVAT" type="checkbox" name="optVAT" value="optVAT"
+                               [checked]="selection.VATFlag"
+                               (change)="selection.VATFlag = !selection.VATFlag" />
+                        <label for="optVAT">VAT</label>
+                    </span>
+                    <span class="Captionstyle">
+                        <input id="optNonVAT" type="checkbox" name="optNonVAT" value="optNonVAT"
+                               [checked]="selection.NonVATFlag"
+                               (change)="selection.NonVATFlag = !selection.NonVATFlag"/>
+                        <label for="optNonVAT">Non-VAT</label>
+                    </span>
+                </fieldset>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table>
+        <tr>
+            <td width="120">
+                <span id="lblRebortBy" class="Captionstyle">Report By</span>
+            </td>
+            <td>
+                <fieldset>
+                    <span class="Captionstyle" style="padding-right: 8px;">
+                        <input id="optSummary" type="radio" name="optReportType" value="Summary"
+                                    (change)="selection.ReportSummaryFlag = true; selection.ReportDetailFlag = false"
+                                    [checked]="selection.ReportSummaryFlag">
+                        <label for="optSummary">Summary</label>
+                    </span>
+                    <span class="Captionstyle">
+                        <input id="optDetail" type="radio" name="optReportType" value="Detail"
+                                    (change)="selection.ReportDetailFlag = true; selection.ReportSummaryFlag = false"
+                                    [checked]="selection.ReportDetailFlag">
+                        <label for="optDetail">Detail</label>
+                    </span>
+                </fieldset>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table>
+        <tr>
+            <td width="120"></td>
+            <td>
+                <button type="submit" name="btnOK" id="btnOK" [disabled]="!form1.valid || (!selection.DistributorCode && !selection.TerritoryCode)" (click)="btnOK_click_verifyBeforeSubmit($event)" class="MainButtonStyle">OK</button>
+                <button onclick="closeTab()" class="MainButtonStyle">Exit</button>
+            </td>
+        </tr>
+    </table>
+    <hr>
+</form>

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <AssemblyTitle>XONT.VENTURA.SOXLR71.WEB</AssemblyTitle>
+	  <Company>X-ONT SOFTWARE %28PVT%29 LTD</Company>
+	  <Product>XONT.VENTURA.SOXLR71.WEB</Product>
+	  <Copyright>Copyright © X-ONT SOFTWARE 2012</Copyright>
+	  <AssemblyVersion>3.0.0.1</AssemblyVersion>
+	  <FileVersion>3.0.0.1</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="SOXLR71\index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Yarp.ReverseProxy" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\XONT.VENTURA.SOXLR71.BLL\XONT.VENTURA.SOXLR71.BLL.csproj" />
+    <ProjectReference Include="..\XONT.VENTURA.SOXLR71.DOMAIN\XONT.VENTURA.SOXLR71.DOMAIN.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="XONT.Common.Data.Resource">
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Common.Data.Resource.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Common.Message.MessageCreate">
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Common.Message.MessageCreate.dll</HintPath>
+    </Reference>
+    <Reference Include="XONT.Ventura.AppConsole.Domain">
+      <HintPath>..\..\..\..\..\..\XONT\XontResource\bin\XONT.Ventura.AppConsole.Domain.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

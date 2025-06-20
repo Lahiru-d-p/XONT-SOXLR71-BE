@@ -1,0 +1,12 @@
+Solution Name	: XONT.VENTURA.SOXLR71
+Task			: SOXLR71
+Name			: VAT Sales Report
+Author			: Nazeer
+Date Created	: 2024.05.16   
+
+
+
+***************************** Modification Control ********************************************************************************************
+Tag     Date			Developer			SpecID					Project 	Version 	Description															
+***********************************************************************************************************************************************
+V001	17-05-2024		Nazeer										HEMA		3.0.0.1		Bug Fixing RD.Distributor table not having Territory Code
