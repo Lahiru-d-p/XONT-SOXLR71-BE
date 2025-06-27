@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XONT.VENTURA.SOXLR71
+namespace XONT.VENTURA.SOXLR71.DOMAIN
 {
     public class Selection
     {
@@ -21,6 +21,11 @@ namespace XONT.VENTURA.SOXLR71
         public bool ReportSummaryFlag { get; set; }
         public bool ReportDetailFlag { get; set; }
         public string ImagePath { get; set; }
+
+    }
+    public class ExcelGenerationSelection
+    {
+        public Selection SelectionCriteria { get; set; }
 
     }
 

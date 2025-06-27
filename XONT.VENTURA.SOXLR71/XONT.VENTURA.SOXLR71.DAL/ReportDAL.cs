@@ -1,47 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Data;
 using XONT.Common.Data;
 using XONT.Common.Message;
-using System.Text;
 using XONT.Ventura.AppConsole;
+using XONT.VENTURA.SOXLR71.DOMAIN;
 
-namespace XONT.VENTURA.SOXLR71
+namespace XONT.VENTURA.SOXLR71.DAL
 {
+
     public class ReportDAL
     {
-        private CommonDBService dbService;
-        ParameterSet paramSet;
-        List<SPParameter> spParametersList;
         private DataTable dTable;
-
-        public ReportDAL()
+        private readonly string _userDbConnectionString;
+        private readonly string _systemDbConnectionString;
+        private readonly IConfiguration _configuration;
+        public ReportDAL(IConfiguration configuration)
         {
-            dbService = new CommonDBService();
+            _configuration = configuration;
+            _userDbConnectionString = _configuration.GetConnectionString("UserDB");
+            _systemDbConnectionString = _configuration.GetConnectionString("SystemDB");
         }
-
         public DataTable GetTerritoryPrompt(string businessUnit, ref MessageSet message)
         {
             DataTable dtResults = null;
             try
             {
-                ParameterSet paramSet = new ParameterSet();
-                List<SPParameter> spParametersList = new List<SPParameter>();
-                paramSet.SetSPParameterList(spParametersList, "BusinessUnit", businessUnit, "");
-                paramSet.SetSPParameterList(spParametersList, "ExecutionType", "1", "");
-
-                dbService.StartService();
-                dtResults = dbService.FillDataTable(CommonVar.DBConName.UserDB, "[RD].[usp_SOXLR71GetPromptData]", spParametersList);
+                SqlParameter[] parameters =
+                   {
+                new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit },
+                new SqlParameter("@ExecutionType", SqlDbType.Char) { Value = "1" }
+            };
+                dtResults = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetPromptData]", parameters);
             }
             catch (Exception ex)
             {
                 message = MessageCreate.CreateErrorMessage(0, ex, "GetTerritoryPrompt", "XONT.VENTURA.SOXLR71.DAL");
             }
-            finally
-            {
-                dbService.CloseService();
-            }
-
             return dtResults;
         }
 
@@ -50,73 +46,52 @@ namespace XONT.VENTURA.SOXLR71
             DataTable dtResults = null;
             try
             {
-                ParameterSet paramSet = new ParameterSet();
-                List<SPParameter> spParametersList = new List<SPParameter>();
-                paramSet.SetSPParameterList(spParametersList, "BusinessUnit", businessUnit, "");
-                paramSet.SetSPParameterList(spParametersList, "ExecutionType", "2", "");
+                SqlParameter[] parameters =
+                   {
+                new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit },
+                new SqlParameter("@ExecutionType", SqlDbType.Char) { Value = "2" }
+            };
+                dtResults = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetPromptData]", parameters);
 
-                dbService.StartService();
-                dtResults = dbService.FillDataTable(CommonVar.DBConName.UserDB, "[RD].[usp_SOXLR71GetPromptData]", spParametersList);
             }
             catch (Exception ex)
             {
                 message = MessageCreate.CreateErrorMessage(0, ex, "GetDistributorPrompt", "XONT.VENTURA.SOXLR71.DAL");
             }
-            finally
-            {
-                dbService.CloseService();
-            }
-
             return dtResults;
         }
 
         public DataTable GetReportData(Selection selection, out MessageSet msg)
         {
             msg = null;
+            DataTable dTable = new DataTable();
+
             try
             {
-                paramSet = new ParameterSet();
-                spParametersList = new List<SPParameter>();
-                string VATOnlyFlag = "";
-                string NonVATOnlyFlag = "";
-                string ReportTypeFlag = "";
+                string VATOnlyFlag = selection.VATFlag ? "1" : "0";
+                string NonVATOnlyFlag = selection.NonVATFlag ? "1" : "0";
+                string ReportTypeFlag = selection.ReportDetailFlag ? "detail" : "summary";
 
-                if (selection.VATFlag)
-                    VATOnlyFlag = "1";
-                else
-                    VATOnlyFlag = "0";
+                SqlParameter[] parameters =
+                {
+            new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = selection.BusinessUnit  },
+            new SqlParameter("@DistributorCode", SqlDbType.VarChar) { Value = selection.DistributorCode  },
+            new SqlParameter("@TerritoryCode", SqlDbType.VarChar) { Value = selection.TerritoryCode },
+            new SqlParameter("@FromDate", SqlDbType.VarChar) { Value = selection.FromDate },
+            new SqlParameter("@ToDate", SqlDbType.VarChar) { Value = selection.ToDate },
+            new SqlParameter("@ExecutionType", SqlDbType.VarChar) { Value = "3" },
+            new SqlParameter("@VATOnlyFlag", SqlDbType.Char) { Value = VATOnlyFlag },
+            new SqlParameter("@NonVATOnlyFlag", SqlDbType.Char) { Value = NonVATOnlyFlag },
+            new SqlParameter("@ReportTypeFlag", SqlDbType.VarChar) { Value = ReportTypeFlag }
+        };
 
-                if (selection.NonVATFlag)
-                    NonVATOnlyFlag = "1";
-                else
-                    NonVATOnlyFlag = "0";
-
-                if (selection.ReportDetailFlag)
-                    ReportTypeFlag = "detail";
-                else
-                    ReportTypeFlag = "summary";
-
-                paramSet.SetSPParameterList(spParametersList, "BusinessUnit", selection.BusinessUnit, "");
-                paramSet.SetSPParameterList(spParametersList, "DistributorCode", selection.DistributorCode, "");
-                paramSet.SetSPParameterList(spParametersList, "TerritoryCode", selection.TerritoryCode, "");
-                paramSet.SetSPParameterList(spParametersList, "FromDate", selection.FromDate, "");
-                paramSet.SetSPParameterList(spParametersList, "ToDate", selection.ToDate, "");
-                paramSet.SetSPParameterList(spParametersList, "ExecutionType", "3", "");
-                paramSet.SetSPParameterList(spParametersList, "VATOnlyFlag", VATOnlyFlag, "");
-                paramSet.SetSPParameterList(spParametersList, "NonVATOnlyFlag", NonVATOnlyFlag, "");
-                paramSet.SetSPParameterList(spParametersList, "ReportTypeFlag", ReportTypeFlag, "");
-
-                dbService.StartService();
-                dTable = dbService.FillDataTable(CommonVar.DBConName.UserDB, "[RD].[usp_SOXLR71GetReportData]", spParametersList);
+                dTable = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetReportData]", parameters);
             }
             catch (Exception ex)
             {
-                msg = MessageCreate.CreateErrorMessage(0, ex, "GetReportDataByDetail", "XONT.VENTURA.SOXLR71.DAL.dll");
+                msg = MessageCreate.CreateErrorMessage(0, ex, "GetReportData", "XONT.VENTURA.SOXLR71.DAL.dll");
             }
-            finally
-            {
-                dbService.CloseService();
-            }
+
             return dTable;
         }
 
@@ -125,29 +100,21 @@ namespace XONT.VENTURA.SOXLR71
             DataTable dtResults = null;
             try
             {
-                ParameterSet paramSet = new ParameterSet();
-                List<SPParameter> spParametersList = new List<SPParameter>();
-                paramSet.SetSPParameterList(spParametersList, "BusinessUnit", businessUnit, "");
-                paramSet.SetSPParameterList(spParametersList, "DistributorCode", selection.DistributorCode, "");
-                paramSet.SetSPParameterList(spParametersList, "TerritoryCode", selection.TerritoryCode, "");
+                string executionType = (selection.DistributorFlag && !selection.TerritoryFlag) ? "1" : "2";
 
-                if (selection.DistributorFlag && !selection.TerritoryFlag)
-                    paramSet.SetSPParameterList(spParametersList, "ExecutionType", "1", "");
-                else
-                    paramSet.SetSPParameterList(spParametersList, "ExecutionType", "2", "");
-
-                dbService.StartService();
-                dtResults = dbService.FillDataTable(CommonVar.DBConName.UserDB, "[RD].[usp_SOXLR71GetReportData]", spParametersList);
+                SqlParameter[] parameters =
+                {
+                new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit },
+                new SqlParameter("@DistributorCode", SqlDbType.VarChar) { Value = selection.DistributorCode  },
+                new SqlParameter("@TerritoryCode", SqlDbType.VarChar) { Value = selection.TerritoryCode },
+                new SqlParameter("@ExecutionType", SqlDbType.Char) { Value = executionType }
+            };
+                dtResults = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetReportData]", parameters);
             }
             catch (Exception ex)
             {
                 message = MessageCreate.CreateErrorMessage(0, ex, "GetDistributorVATRegNo", "XONT.VENTURA.SOXLR71.DAL");
             }
-            finally
-            {
-                dbService.CloseService();
-            }
-
             return dtResults;
         }
 
@@ -157,17 +124,19 @@ namespace XONT.VENTURA.SOXLR71
             var controlData = new ControlData();
             try
             {
-                string command = " SELECT AllowDecimalPointFlag, DecimalPlaces";
-                command += $"  from RD.Control   ";
-                command += $" where BusinessUnit='{businessUnit}'";
+                string query = @" SELECT AllowDecimalPointFlag, DecimalPlaces from RD.Control  where BusinessUnit= @BusinessUnit";
+                SqlParameter[] parameters =
+                {
+                new SqlParameter("@BusinessUnit",SqlDbType.VarChar){ Value=businessUnit}
 
-                dbService.StartService();
-                dTable = dbService.FillDataTable(CommonVar.DBConName.UserDB, command);
+            };
+                dTable = ExecuteQuery(_userDbConnectionString, query, parameters);
                 if (dTable.Rows.Count > 0)
                 {
-                    controlData.AllowDecimalPointFlag = dTable.Rows[0]["AllowDecimalPointFlag"].ToString().Trim();
+                    var row = dTable.Rows[0];
+                    controlData.AllowDecimalPointFlag = row["AllowDecimalPointFlag"].ToString().Trim();
                     int decimalplace = 0;
-                    int.TryParse(dTable.Rows[0]["DecimalPlaces"].ToString().Trim(), out decimalplace);
+                    int.TryParse(row["DecimalPlaces"].ToString().Trim(), out decimalplace);
                     controlData.DecimalPlaces = decimalplace;
                 }
 
@@ -176,11 +145,6 @@ namespace XONT.VENTURA.SOXLR71
             {
                 msg = MessageCreate.CreateErrorMessage(0, ex, "GetControlData", "XONT.VENTURA.SOXLR71.DAL.dll");
             }
-            finally
-            {
-                dbService.CloseService();
-            }
-
             return controlData;
         }
 
@@ -190,35 +154,42 @@ namespace XONT.VENTURA.SOXLR71
             DataTable dtResult = new DataTable();
             try
             {
-                string str = "SELECT ISNULL(ZYBusinessUnit.BusinessUnit,'') AS BusinessUnit " + " ,ISNULL(ZYBusinessUnit.BusinessUnitName,'') AS BusinessUnitName " + " ,ISNULL(ZYBusinessUnit.AddressLine1,'') AS AddressLine1 " + " ,ISNULL(ZYBusinessUnit.AddressLine2,'') AS AddressLine2 " + " ,ISNULL(ZYBusinessUnit.AddressLine3,'') AS AddressLine3 " + " ,ISNULL(ZYBusinessUnit.AddressLine4,'') AS AddressLine4 " + " ,ISNULL(ZYBusinessUnit.AddressLine5,'') AS AddressLine5 " + " ,ISNULL(ZYBusinessUnit.PostCode,'') AS PostCode " + " ,ISNULL(ZYBusinessUnit.TelephoneNumber,'') AS TelephoneNumber " + " ,ISNULL(ZYBusinessUnit.FaxNumber,'') AS FaxNumber " + " ,ISNULL(ZYBusinessUnit.EmailAddress,'') AS EmailAddress " + " ,ISNULL(ZYBusinessUnit.WebAddress,'') AS WebAddress " + " ,ISNULL(ZYBusinessUnit.VATRegistrationNumber,'') AS VATRegistrationNumber " + " ,ZYBusinessUnit.Logo " + " FROM  ZYBusinessUnit with(nolock)" + " WHERE (ZYBusinessUnit.BusinessUnit='" + businessUnit + "')";
+                string query = @"SELECT ISNULL(ZYBusinessUnit.BusinessUnit,'') AS BusinessUnit ,ISNULL(ZYBusinessUnit.BusinessUnitName,'') AS BusinessUnitName
+                ,ISNULL(ZYBusinessUnit.AddressLine1,'') AS AddressLine1  ,ISNULL(ZYBusinessUnit.AddressLine2,'') AS AddressLine2
+                ,ISNULL(ZYBusinessUnit.AddressLine3,'') AS AddressLine3  ,ISNULL(ZYBusinessUnit.AddressLine4,'') AS AddressLine4
+                ,ISNULL(ZYBusinessUnit.AddressLine5,'') AS AddressLine5  ,ISNULL(ZYBusinessUnit.PostCode,'') AS PostCode
+                ,ISNULL(ZYBusinessUnit.TelephoneNumber,'') AS TelephoneNumber ,ISNULL(ZYBusinessUnit.FaxNumber,'') AS FaxNumber
+                ,ISNULL(ZYBusinessUnit.EmailAddress,'') AS EmailAddress ,ISNULL(ZYBusinessUnit.WebAddress,'') AS WebAddress
+                ,ISNULL(ZYBusinessUnit.VATRegistrationNumber,'') AS VATRegistrationNumber  ,ZYBusinessUnit.Logo 
+                FROM  ZYBusinessUnit with(nolock)  WHERE (ZYBusinessUnit.BusinessUnit= @BusinessUnit)";
 
-                dbService.StartService();
-                dtResult = dbService.FillDataTable(CommonVar.DBConName.SystemDB, str);
+                SqlParameter[] parameters =
+                {
+                new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit }
+            };
+                dtResult = ExecuteQuery(_systemDbConnectionString, query, parameters);
 
                 if (dtResult.Rows.Count > 0)
                 {
-                    bu.BusinessUnitCode = dtResult.Rows[0]["Businessunit"].ToString().Trim();
-                    bu.BusinessUnitName = dtResult.Rows[0]["BusinessUnitName"].ToString().Trim();
-                    bu.AddressLine1 = dtResult.Rows[0]["AddressLine1"].ToString().Trim();
-                    bu.AddressLine2 = dtResult.Rows[0]["AddressLine2"].ToString().Trim();
-                    bu.AddressLine3 = dtResult.Rows[0]["AddressLine3"].ToString().Trim();
-                    bu.AddressLine4 = dtResult.Rows[0]["AddressLine4"].ToString().Trim();
-                    bu.AddressLine5 = dtResult.Rows[0]["AddressLine5"].ToString().Trim();
-                    bu.PostCode = dtResult.Rows[0]["PostCode"].ToString().Trim();
-                    bu.TelephoneNumber = dtResult.Rows[0]["TelephoneNumber"].ToString().Trim();
-                    bu.FaxNumber = dtResult.Rows[0]["FaxNumber"].ToString().Trim();
-                    bu.EmailAddress = dtResult.Rows[0]["EmailAddress"].ToString().Trim();
-                    bu.WebAddress = dtResult.Rows[0]["WebAddress"].ToString().Trim();
-                    bu.VATRegistrationNumber = dtResult.Rows[0]["VATRegistrationNumber"].ToString().Trim();
+                    var row = dtResult.Rows[0];
+                    bu.BusinessUnitCode = row["Businessunit"].ToString().Trim();
+                    bu.BusinessUnitName = row["BusinessUnitName"].ToString().Trim();
+                    bu.AddressLine1 = row["AddressLine1"].ToString().Trim();
+                    bu.AddressLine2 = row["AddressLine2"].ToString().Trim();
+                    bu.AddressLine3 = row["AddressLine3"].ToString().Trim();
+                    bu.AddressLine4 = row["AddressLine4"].ToString().Trim();
+                    bu.AddressLine5 = row["AddressLine5"].ToString().Trim();
+                    bu.PostCode = row["PostCode"].ToString().Trim();
+                    bu.TelephoneNumber = row["TelephoneNumber"].ToString().Trim();
+                    bu.FaxNumber = row["FaxNumber"].ToString().Trim();
+                    bu.EmailAddress = row["EmailAddress"].ToString().Trim();
+                    bu.WebAddress = row["WebAddress"].ToString().Trim();
+                    bu.VATRegistrationNumber = row["VATRegistrationNumber"].ToString().Trim();
                 }
             }
             catch (Exception ex)
             {
                 msg = MessageCreate.CreateErrorMessage(0, ex, "GetBusinessUnit", "XONT.VENTURA.SOXLR71.DAL.dll");
-            }
-            finally
-            {
-                dbService.CloseService();
             }
             return bu;
         }
@@ -226,26 +197,64 @@ namespace XONT.VENTURA.SOXLR71
         public DataTable GetBusinessUnitLogo(string businessUnit, out MessageSet msg)
         {
             msg = null;
+            DataTable dTable = null;
+
             try
             {
-                StringBuilder command = new StringBuilder("SELECT  BusinessUnit,Logo");
-                command.Append(" ,ShowLogo = CASE WHEN Logo IS NULL THEN 0 ELSE 1 END");
-                command.Append(" FROM  ZYBusinessUnit ");
-                command.Append($" WHERE (ZYBusinessUnit.BusinessUnit='{businessUnit}')");
+                string query = @"
+                SELECT BusinessUnit, Logo,
+                       ShowLogo = CASE WHEN Logo IS NULL THEN 0 ELSE 1 END
+                FROM ZYBusinessUnit
+                WHERE BusinessUnit = @BusinessUnit";
 
-                dbService.StartService();
-                dTable = dbService.FillDataTable(CommonVar.DBConName.SystemDB, command.ToString());
+                SqlParameter[] parameters =
+                {
+                new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit }
+            };
+
+                dTable = ExecuteQuery(_systemDbConnectionString, query, parameters);
             }
             catch (Exception ex)
             {
                 msg = MessageCreate.CreateErrorMessage(0, ex, "GetBusinessUnitLogo", "XONT.VENTURA.SOXLR71.DAL.dll");
             }
-            finally
-            {
-                dbService.CloseService();
-            }
+
             return dTable;
         }
+        public DataTable ExecuteStoredProcedure(string connectionString, string spName, SqlParameter[] parameters)
+        {
+            var dt = new DataTable();
+            using (var conn = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(spName, conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddRange(parameters);
+
+                using (var adapter = new SqlDataAdapter(cmd))
+                {
+                    adapter.Fill(dt);
+                }
+            }
+
+            return dt;
+        }
+
+        public DataTable ExecuteQuery(string connectionString, string query, SqlParameter[] parameters)
+        {
+            var dt = new DataTable();
+            using (var conn = new SqlConnection(connectionString))
+            using (var cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddRange(parameters);
+                using (var adapter = new SqlDataAdapter(cmd))
+                {
+                    adapter.Fill(dt);
+                }
+            }
+
+            return dt;
+        }
+
 
     }
 }

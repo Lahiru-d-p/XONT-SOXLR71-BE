@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
-using System.Web;
+using Newtonsoft.Json;
 using XONT.Common.Message;
 using XONT.Ventura.AppConsole;
+using XONT.VENTURA.SOXLR71.BLL;
+using XONT.VENTURA.SOXLR71.DOMAIN;
 
 namespace XONT.VENTURA.SOXLR71
 {
@@ -16,24 +13,37 @@ namespace XONT.VENTURA.SOXLR71
     public class SOXLR71Controller : ControllerBase
     {
 
-        private ReportBLL _bll;
         private User _user = null;
         private BusinessUnit _bUnit = null;
         private MessageSet _msg = null;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ReportBLL _bll;
+        private readonly IWebHostEnvironment _env;
 
-        public SOXLR71Controller(IHttpContextAccessor httpContextAccessor)
+
+        public SOXLR71Controller(IHttpContextAccessor httpContextAccessor, ReportBLL bll, IWebHostEnvironment env)
         {
-            _bll = new ReportBLL();
             _httpContextAccessor = httpContextAccessor;
+            _bll = bll;
+            _env = env;
+
             var session = _httpContextAccessor.HttpContext?.Session;
             if (session != null)
             {
-                _user = session.GetObject<User>("Main_LoginUser");
-                _bUnit = session.GetObject<BusinessUnit>("Main_BusinessUnitDetail");
+                var userStr = session.GetString("Main_LoginUser");
+                if (!string.IsNullOrWhiteSpace(userStr))
+                {
+                    _user = JsonConvert.DeserializeObject<User>(userStr);
+                }
+
+                var bUnitStr = session.GetString("Main_BusinessUnitDetail");
+                if (!string.IsNullOrWhiteSpace(bUnitStr))
+                {
+                    _bUnit = JsonConvert.DeserializeObject<BusinessUnit>(bUnitStr);
+                }
             }
-            _msg = null;
         }
+        
 
         [Route("~/api/SOXLR71/GetTerritoryPrompt")]
         [HttpGet]
@@ -77,33 +87,27 @@ namespace XONT.VENTURA.SOXLR71
 
         [Route("~/api/SOXLR71/GenerateExcel")]
         [HttpPost]
-        public IActionResult GenerateExcel([FromBody] dynamic data)
+        public IActionResult GenerateExcel([FromBody] ExcelGenerationSelection selection)
         {
             try
             {
-                _bll = new ReportBLL();
                 byte[] excelBytes;
 
-                Selection selection = data.SelectionCriteria.ToObject<Selection>();
+                selection.SelectionCriteria.ImagePath = Path.Combine(_env.ContentRootPath, "SOXLR71", "logo.jpg");
 
-                var webHostEnvironment = _httpContextAccessor.HttpContext?.RequestServices.GetService(typeof(IWebHostEnvironment)) as IWebHostEnvironment;
-                if (webHostEnvironment != null)
-                {
-                    selection.ImagePath = Path.Combine(webHostEnvironment.WebRootPath, "SOXLR71", "logo.jpg");
-                }
 
                 if (_user != null)
                 {
-                    selection.BusinessUnit = _user.BusinessUnit;
-                    selection.UserName = _user.UserName;
-                    selection.PowerUser = _user.PowerUser;
+                    selection.SelectionCriteria.BusinessUnit = _user.BusinessUnit;
+                    selection.SelectionCriteria.UserName = _user.UserName;
+                    selection.SelectionCriteria.PowerUser = _user.PowerUser;
                 }
 
                 DataTable rptSource = new DataTable();
                 ControlData controlData = _bll.GetControlData(_user.BusinessUnit.Trim(), out _msg);
                 BusinessUnit businessUnit = _bll.GetBusinessUnit(_user.BusinessUnit, ref _msg);
 
-                rptSource = _bll.GetReportData(selection, out _msg);
+                rptSource = _bll.GetReportData(selection.SelectionCriteria, out _msg);
 
                 if (_msg != null)
                     return GetErrorMessageResponse(_msg);
@@ -118,15 +122,15 @@ namespace XONT.VENTURA.SOXLR71
                     var session = _httpContextAccessor.HttpContext?.Session;
                     if (session != null)
                     {
-                        session.SetObject("Main_BusinessUnitLogo", dtLogo);
+                        session.SetString("Main_BusinessUnitLogo", JsonConvert.SerializeObject(dtLogo));
                     }
 
                     string reportName = string.Format("SOXLR71{0}.xlsx", DateTime.Now.Ticks);
 
-                    if (selection.ReportDetailFlag)
-                        excelBytes = _bll.GenerateExcelByDetail(selection, rptSource, dtLogo, reportName, controlData, businessUnit, ref _msg);
+                    if (selection.SelectionCriteria.ReportDetailFlag)
+                        excelBytes = _bll.GenerateExcelByDetail(selection.SelectionCriteria, rptSource, dtLogo, reportName, controlData, businessUnit, ref _msg);
                     else
-                        excelBytes = _bll.GenerateExcelBySummary(selection, rptSource, dtLogo, reportName, controlData, businessUnit, ref _msg);
+                        excelBytes = _bll.GenerateExcelBySummary(selection.SelectionCriteria, rptSource, dtLogo, reportName, controlData, businessUnit, ref _msg);
 
                     return Ok(new { fileContents = excelBytes, ReportName = reportName });
                 }
@@ -154,18 +158,5 @@ namespace XONT.VENTURA.SOXLR71
             return GetErrorMessageResponse(_msg);
         }
         #endregion
-    }
-    public static class SessionExtensions
-    {
-        public static T GetObject<T>(this ISession session, string key)
-        {
-            var value = session.GetString(key);
-            return value == null ? default : JsonSerializer.Deserialize<T>(value);
-        }
-
-        public static void SetObject<T>(this ISession session, string key, T value)
-        {
-            session.SetString(key, JsonSerializer.Serialize(value));
-        }
     }
 }

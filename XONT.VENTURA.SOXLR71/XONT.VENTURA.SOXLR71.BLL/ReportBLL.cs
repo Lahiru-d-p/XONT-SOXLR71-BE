@@ -1,22 +1,25 @@
-﻿using OfficeOpenXml;
+﻿using Microsoft.Extensions.Configuration;
+using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Style;
 using System;
 using System.Data;
 using System.IO;
 using XONT.Common.Message;
-using XONT.Ventura.Common.ConvertDateTime;
 using XONT.Ventura.AppConsole;
+using XONT.Ventura.Common.ConvertDateTime;
+using XONT.VENTURA.SOXLR71.DAL;
+using XONT.VENTURA.SOXLR71.DOMAIN;
 
-namespace XONT.VENTURA.SOXLR71
+namespace XONT.VENTURA.SOXLR71.BLL
 {
     public class ReportBLL
     {
-        private ReportDAL _dal;
+        private readonly ReportDAL _dal;
 
-        public ReportBLL()
+        public ReportBLL(ReportDAL dal)
         {
-            _dal = new ReportDAL();
+            _dal = dal;
         }
 
         public DataTable GetTerritoryPrompt(string businessUnit, ref MessageSet msg)
@@ -44,6 +47,7 @@ namespace XONT.VENTURA.SOXLR71
             GetDistributorVATRegNo(selection, businessUnit.BusinessUnitCode, ref msg);
 
             #region Excel Report
+            ExcelPackage.License.SetNonCommercialOrganization("Xont");
             using (ExcelPackage xp = new ExcelPackage())
             {
                 ExcelWorksheet worksheet = xp.Workbook.Worksheets.Add(reportName);
@@ -160,6 +164,7 @@ namespace XONT.VENTURA.SOXLR71
             GetDistributorVATRegNo(selection, businessUnit.BusinessUnitCode, ref msg);
 
             #region Excel Report
+            ExcelPackage.License.SetNonCommercialOrganization("Xont");
             using (ExcelPackage xp = new ExcelPackage())
             {
                 ExcelWorksheet worksheet = xp.Workbook.Worksheets.Add(reportName);
@@ -458,7 +463,7 @@ namespace XONT.VENTURA.SOXLR71
         private static void AddImage(ExcelWorksheet worksheet, int rowIndex, int columnIndex, string filePath)
         {
             ExcelPicture picture = null;
-            if (string.IsNullOrWhiteSpace(filePath))
+            if (!string.IsNullOrWhiteSpace(filePath))
             {
                 picture = worksheet.Drawings.AddPicture("Logo", filePath);
                 picture.From.Column = columnIndex;

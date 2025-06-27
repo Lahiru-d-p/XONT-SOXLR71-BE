@@ -11,15 +11,15 @@
 	  <FileVersion>3.0.0.1</FileVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="SOXLR71\index.html" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
     <PackageReference Include="Microsoft.AspNetCore.SystemWebAdapters.CoreServices" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
     <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
   <ItemGroup>
