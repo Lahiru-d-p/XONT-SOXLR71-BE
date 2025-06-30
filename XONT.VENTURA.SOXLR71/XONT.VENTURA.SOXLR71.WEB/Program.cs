@@ -4,7 +4,6 @@ using XONT.VENTURA.SOXLR71.WEB.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
 builder.Services.AddSystemWebAdapters();
 builder.Services.AddHttpForwarder();
 builder.Services.AddDistributedMemoryCache();
@@ -59,6 +58,5 @@ app.UseAuthorization();
 app.UseSystemWebAdapters();
 
 app.MapDefaultControllerRoute();
-// Alternatively: app.MapControllers(); for attribute routing
 
 app.Run();
