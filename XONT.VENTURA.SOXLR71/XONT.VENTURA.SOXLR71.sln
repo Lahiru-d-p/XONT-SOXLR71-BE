@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9764582B-B8C1-45CD-B9C2-8AB419683D5A}"
 	ProjectSection(SolutionItems) = preProject
 		SOXLR71-ModificationLog.txt = SOXLR71-ModificationLog.txt
+		UpgradeGuid-.net.txt = UpgradeGuid-.net.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XONT.VENTURA.SOXLR71.DAL", "XONT.VENTURA.SOXLR71.DAL\XONT.VENTURA.SOXLR71.DAL.csproj", "{6F4AD475-65BB-445B-1874-01CFB45425D4}"

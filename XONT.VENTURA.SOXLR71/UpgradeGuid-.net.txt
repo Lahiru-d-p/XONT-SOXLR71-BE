@@ -1,0 +1,45 @@
+﻿.NET 8 Version Upgrade
+________________________________________
+
+1.	Install .Net Upgrade Assistant Extension to visual studio
+●	https://learn.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-install
+●	https://learn.microsoft.com/en-us/dotnet/core/porting/upgrade-assistant-how-to-upgrade
+________________________________________
+2.	Generate the upgrading Report
+Right click on solution->Upgrade
+●	Click on New Report and generate upgrading report
+●	Understand the main points of upgrading.
+________________________________________
+3.	Project Upgrade
+Right click on each project -> Upgrade 
+•	For DOMAIN,DAL,BLL
+ Click on Side by Side project upgrade and upgrade each project.
+•	For WEB
+ Click on Side by Side incremental project upgrade and upgrade project.
+ Click on Upgrade Controller and upgrade each controller.
+ Upgrade any other classes rather Global.asax,webapiconfig,properties.settings.
+
+
+________________________________________
+4.	Nuget Upgrade
+Right click on a project -> Upgrade 
+•	Select Nuget Upgrades -> Click on Nuget Central Package Management  -> Select all newly added projects and upgrade
+________________________________________
+5.	Resolve new project conflicts
+
+•	If there are any library conflicts remove old libraries and add suitable new libraries
+•	If there are any missing files in new projects add them into new project
+________________________________________
+6.	Replace with Ado net
+
+•	If there is no common data component replace db access with ado net
+________________________________________
+7.	Add middleware for development initialization
+
+•	Create middleware for initiate user data in development
+________________________________________
+8.	appsettings
+
+•	move app settings and db connection strings from web config to appsetings 
+________________________________________
+

@@ -27,8 +27,8 @@
     <Company>X-ONT SOFTWARE %28PVT%29 LTD</Company>
     <Product>XONT.VENTURA.SOXLR71.BLL</Product>
     <Copyright>Copyright © X-ONT SOFTWARE 2012</Copyright>
-    <AssemblyVersion>3.0.0.1</AssemblyVersion>
-    <FileVersion>3.0.0.1</FileVersion>
+    <AssemblyVersion>3.0.1.0</AssemblyVersion>
+    <FileVersion>3.0.1.0</FileVersion>
 	<ReferencePath>..\..\..\..\..\..\XONT\XontResource\bin</ReferencePath>
   </PropertyGroup>
   <ItemGroup>
