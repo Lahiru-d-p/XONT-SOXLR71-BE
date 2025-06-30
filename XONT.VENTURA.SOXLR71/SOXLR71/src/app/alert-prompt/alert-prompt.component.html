@@ -1,0 +1,91 @@
+<div class="modal-backdrop" *ngIf="visible">
+  <div class="modal-box">
+    <!-- ALERT -->
+    <ng-container *ngIf="messageType === 'alert'">
+      <p class="custom-modal-message">{{ messageText }}</p>
+      <button (click)="confirmOK()" class="MainButtonStyle">
+        {{ okButtonText }}
+      </button>
+    </ng-container>
+
+    <!-- CONFIRM -->
+    <ng-container *ngIf="messageType === 'confirm'">
+      <p class="custom-modal-message">{{ messageText }}</p>
+      <div class="text-center">
+        <button (click)="confirmOK()" class="MainButtonStyle">
+          {{ okButtonText }}
+        </button>
+        <button (click)="confirmCancel()" class="MainButtonStyle">
+          {{ cancelButtonText }}
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ERROR -->
+    <ng-container *ngIf="messageType === 'error' && errorMessage">
+      <div *ngIf="errorMessage.errorType === 1" class="error-detail">
+        <h4 class="custom-modal-message">Error Message</h4>
+        <table>
+          <tr>
+            <td>Error Log</td>
+            <td>: {{ errorMessage.errorLog }}</td>
+          </tr>
+          <tr>
+            <td>Error Time</td>
+            <td>: {{ errorMessage.errorTime }}</td>
+          </tr>
+          <tr>
+            <td>Workstation</td>
+            <td>: {{ errorMessage.workstationId }}</td>
+          </tr>
+          <tr>
+            <td>User Name</td>
+            <td>: {{ errorMessage.userName }}</td>
+          </tr>
+          <tr>
+            <td>IP Address</td>
+            <td>: {{ errorMessage.ipAddress }}</td>
+          </tr>
+          <tr>
+            <td>Message Number</td>
+            <td>: {{ errorMessage.msgNumber }}</td>
+          </tr>
+          <tr>
+            <td>Description</td>
+            <td>: {{ errorMessage.desc }}</td>
+          </tr>
+          <tr>
+            <td>Source</td>
+            <td>: {{ errorMessage.errorSource }}</td>
+          </tr>
+          <tr>
+            <td>DLL Name</td>
+            <td>: {{ errorMessage.dllName }}</td>
+          </tr>
+          <tr>
+            <td>Version</td>
+            <td>: {{ errorMessage.version }}</td>
+          </tr>
+          <tr>
+            <td>Routine</td>
+            <td>: {{ errorMessage.routine }}</td>
+          </tr>
+          <tr>
+            <td>Line</td>
+            <td>: {{ errorMessage.lineNumber }}</td>
+          </tr>
+        </table>
+        <div class="text-center">
+          <button (click)="confirmOK()" class="MainButtonStyle">OK</button>
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage.errorType === 2" class="text-center">
+        <p class="custom-modal-message">
+          {{ errorMessage.msgNumber }}: {{ errorMessage.desc }}
+        </p>
+        <button (click)="confirmOK()" class="MainButtonStyle">OK</button>
+      </div>
+    </ng-container>
+  </div>
+</div>

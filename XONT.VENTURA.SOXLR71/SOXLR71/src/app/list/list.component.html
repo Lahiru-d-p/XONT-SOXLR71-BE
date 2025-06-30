@@ -1,0 +1,224 @@
+<ngx-spinner
+  [fullScreen]="true"
+  color="#a0cadb"
+  [bdColor]="'rgba(255,255,255,0.5)'"
+  type="line-spin-fade"
+  size="medium"
+  >Please wait...</ngx-spinner
+>
+<app-alert-prompt #alertModal></app-alert-prompt>
+
+<form [formGroup]="form" (keydown.enter)="$event.preventDefault()" class="p-2">
+  <div class="card mb-4 border-0">
+    <div class="card-body">
+      <!-- Selection Type -->
+      <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label fw-bold">Selection</label>
+        <div class="col-sm-9 col-lg-3 d-flex flex-wrap">
+          <fieldset class="custom-border p-2">
+            <legend class="visually-hidden">Selection Type</legend>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="optDistributor"
+                formControlName="selectionType"
+                value="Distributor"
+                (change)="onSelectionChange('Distributor')"
+              />
+              <label class="form-check-label fw-bold" for="optDistributor"
+                >Distributor</label
+              >
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="optTerritory"
+                formControlName="selectionType"
+                value="Territory"
+                (change)="onSelectionChange('Territory')"
+              />
+              <label class="form-check-label fw-bold" for="optTerritory"
+                >Territory</label
+              >
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <!-- Distributor Selection -->
+      <ng-container *ngIf="selectionType === 'Distributor'">
+        <div class="mb-3 row">
+          <label class="col-sm-2 col-form-label fw-bold">Distributor</label>
+          <div class="col-sm-9 col-lg-6">
+            <!-- <app-selection-prompt
+              type="Distributor"
+              [selectedName]="selection.DistributorName"
+              [selectedCode]="selection.DistributorCode"
+              (itemSelected)="onSelectDistributor($event)"
+            ></app-selection-prompt> -->
+            <xont-ventura-list-prompt
+              name="lpmtDistributor"
+              id="lpmtDistributor"
+              #lpmtDistributor
+              [maxLengths]="[10, 40]"
+              [inputWidths]="[120, 350]"
+              [gridHeaders]="['Code', 'Description']"
+              [gridFields]="['distributorCode', 'distributorName']"
+              [mandatory]="selection.DistributorFlag"
+              [strict]="false"
+              (onDataBind)="lpmtDistributor_DataBind()"
+              [control]="form"
+              [disabled]="false"
+              [modelProps]="['distributorCode', 'distributorName']"
+              [dataFields]="['distributorCode', 'distributorName']"
+            >
+            </xont-ventura-list-prompt>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Territory Selection -->
+      <ng-container *ngIf="selectionType === 'Territory'">
+        <div class="mb-3 row">
+          <label class="col-sm-2 col-form-label fw-bold">Territory</label>
+          <div class="col-sm-9 col-lg-6">
+            <!-- <app-selection-prompt
+              type="Territory"
+              [selectedName]="selection.TerritoryName"
+              [selectedCode]="selection.TerritoryCode"
+              (itemSelected)="onSelectTerritory($event)"
+            ></app-selection-prompt> -->
+            <xont-ventura-list-prompt
+              name="lpmtTerritory"
+              id="lpmtTerritory"
+              #lpmtTerritory
+              [maxLengths]="[10, 40]"
+              [inputWidths]="[120, 350]"
+              [gridHeaders]="['Code', 'Description']"
+              [gridFields]="['territoryCode', 'territoryName']"
+              [mandatory]="selection.TerritoryFlag"
+              [strict]="false"
+              (onDataBind)="lpmtTerritory_DataBind()"
+              [control]="form"
+              [disabled]="false"
+              [modelProps]="['territoryCode', 'territoryName']"
+              [dataFields]="['territoryCode', 'territoryName']"
+            >
+            </xont-ventura-list-prompt>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Date Range -->
+      <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label fw-bold">From Date</label>
+        <div
+          class="col-sm-9 col-lg-6 d-flex flex-wrap gap-2 align-items-center"
+        >
+          <input
+            type="date"
+            required
+            id="FromDateShow"
+            class="form-control w-auto"
+            formControlName="FromDateShow"
+          />
+          <span class="fw-bold">To</span>
+          <input
+            type="date"
+            required
+            id="ToDateShow"
+            class="form-control w-auto"
+            formControlName="ToDateShow"
+          />
+        </div>
+      </div>
+
+      <!-- VAT Status -->
+      <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label fw-bold">VAT Status</label>
+        <div class="col-sm-9 col-lg-3 d-flex flex-wrap">
+          <fieldset class="custom-border p-2">
+            <legend class="visually-hidden">VAT Status</legend>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="optVAT"
+                formControlName="VATFlag"
+              />
+              <label class="form-check-label fw-bold" for="optVAT">VAT</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="optNonVAT"
+                formControlName="NonVATFlag"
+              />
+              <label class="form-check-label fw-bold" for="optNonVAT"
+                >Non-VAT</label
+              >
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <!-- Report Type -->
+      <div class="mb-3 row">
+        <label class="col-sm-2 col-form-label fw-bold">Report By</label>
+        <div class="col-sm-9 col-lg-3 d-flex flex-wrap">
+          <fieldset class="custom-border p-2">
+            <legend class="visually-hidden">Report Type</legend>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="optSummary"
+                formControlName="reportType"
+                value="Summary"
+              />
+              <label class="form-check-label fw-bold" for="optSummary"
+                >Summary</label
+              >
+            </div>
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="radio"
+                id="optDetail"
+                formControlName="reportType"
+                value="Detail"
+              />
+              <label class="form-check-label fw-bold" for="optDetail"
+                >Detail</label
+              >
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mb-3 row">
+        <div class="offset-sm-2 col-sm-9 d-flex gap-2">
+          <button
+            type="submit"
+            class="MainButtonStyle"
+            [disabled]="
+              !form.valid ||
+              (!selection.DistributorCode && !selection.TerritoryCode) ||
+              (busy !== null && !busy.closed)
+            "
+            (click)="btnOK_click_verifyBeforeSubmit($event)"
+          >
+            OK
+          </button>
+          <button type="button" class="MainButtonStyle" (click)="closeTab()">
+            Exit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

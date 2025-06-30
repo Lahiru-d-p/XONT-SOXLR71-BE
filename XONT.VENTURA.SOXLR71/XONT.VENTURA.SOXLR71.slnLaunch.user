@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "XONT.VENTURA.SOXLR71.WEB\\XONT.VENTURA.SOXLR71.WEB.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "SOXLR71\\SOXLR71.esproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
