@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Data;
+using System.Threading.Tasks;
 using XONT.Common.Data;
 using XONT.Common.Message;
 using XONT.Ventura.AppConsole;
@@ -22,9 +23,9 @@ namespace XONT.VENTURA.SOXLR71.DAL
             _userDbConnectionString = _configuration.GetConnectionString("UserDB");
             _systemDbConnectionString = _configuration.GetConnectionString("SystemDB");
         }
-        public DataTable GetTerritoryPrompt(string businessUnit, ref MessageSet message)
+        public async Task<Result<DataTable>> GetTerritoryPrompt(string businessUnit)
         {
-            DataTable dtResults = null;
+            var result = new Result<DataTable>();
             try
             {
                 SqlParameter[] parameters =
@@ -32,18 +33,18 @@ namespace XONT.VENTURA.SOXLR71.DAL
                 new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit },
                 new SqlParameter("@ExecutionType", SqlDbType.Char) { Value = "1" }
             };
-                dtResults = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetPromptData]", parameters);
+                result.Data = await ExecuteStoredProcedureAsync(_userDbConnectionString, "[RD].[usp_SOXLR71GetPromptData]", parameters);
             }
             catch (Exception ex)
             {
-                message = MessageCreate.CreateErrorMessage(0, ex, "GetTerritoryPrompt", "XONT.VENTURA.SOXLR71.DAL");
+                result.Message = MessageCreate.CreateErrorMessage(0, ex, "GetTerritoryPrompt", "XONT.VENTURA.SOXLR71.DAL");
             }
-            return dtResults;
+            return result;
         }
 
-        public DataTable GetDistributorPrompt(string businessUnit, ref MessageSet message)
+        public async Task<Result<DataTable>> GetDistributorPrompt(string businessUnit)
         {
-            DataTable dtResults = null;
+            var result = new Result<DataTable>();
             try
             {
                 SqlParameter[] parameters =
@@ -51,21 +52,19 @@ namespace XONT.VENTURA.SOXLR71.DAL
                 new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit },
                 new SqlParameter("@ExecutionType", SqlDbType.Char) { Value = "2" }
             };
-                dtResults = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetPromptData]", parameters);
+                result.Data = await ExecuteStoredProcedureAsync(_userDbConnectionString, "[RD].[usp_SOXLR71GetPromptData]", parameters);
 
             }
             catch (Exception ex)
             {
-                message = MessageCreate.CreateErrorMessage(0, ex, "GetDistributorPrompt", "XONT.VENTURA.SOXLR71.DAL");
+                result.Message = MessageCreate.CreateErrorMessage(0, ex, "GetDistributorPrompt", "XONT.VENTURA.SOXLR71.DAL");
             }
-            return dtResults;
+            return result;
         }
 
-        public DataTable GetReportData(Selection selection, out MessageSet msg)
+        public async Task<Result<DataTable>> GetReportData(Selection selection)
         {
-            msg = null;
-            DataTable dTable = new DataTable();
-
+            var result = new Result<DataTable>();
             try
             {
                 string VATOnlyFlag = selection.VATFlag ? "1" : "0";
@@ -85,19 +84,20 @@ namespace XONT.VENTURA.SOXLR71.DAL
             new SqlParameter("@ReportTypeFlag", SqlDbType.VarChar) { Value = ReportTypeFlag }
         };
 
-                dTable = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetReportData]", parameters);
+                result.Data  = await ExecuteStoredProcedureAsync(_userDbConnectionString, "[RD].[usp_SOXLR71GetReportData]", parameters);
             }
             catch (Exception ex)
             {
-                msg = MessageCreate.CreateErrorMessage(0, ex, "GetReportData", "XONT.VENTURA.SOXLR71.DAL.dll");
+                result.Message = MessageCreate.CreateErrorMessage(0, ex, "GetReportData", "XONT.VENTURA.SOXLR71.DAL.dll");
             }
 
-            return dTable;
+            return result;
         }
 
-        public DataTable GetDistributorVATRegNo(Selection selection, string businessUnit, ref MessageSet message)
+        public async Task<Result<DataTable>> GetDistributorVATRegNo(Selection selection, string businessUnit)
         {
-            DataTable dtResults = null;
+
+            var result = new Result<DataTable>();
             try
             {
                 string executionType = (selection.DistributorFlag && !selection.TerritoryFlag) ? "1" : "2";
@@ -109,19 +109,22 @@ namespace XONT.VENTURA.SOXLR71.DAL
                 new SqlParameter("@TerritoryCode", SqlDbType.VarChar) { Value = selection.TerritoryCode },
                 new SqlParameter("@ExecutionType", SqlDbType.Char) { Value = executionType }
             };
-                dtResults = ExecuteStoredProcedure(_userDbConnectionString, "[RD].[usp_SOXLR71GetReportData]", parameters);
+                result.Data = await ExecuteStoredProcedureAsync(_userDbConnectionString, "[RD].[usp_SOXLR71GetReportData]", parameters);
             }
             catch (Exception ex)
             {
-                message = MessageCreate.CreateErrorMessage(0, ex, "GetDistributorVATRegNo", "XONT.VENTURA.SOXLR71.DAL");
+                result.Message = MessageCreate.CreateErrorMessage(0, ex, "GetDistributorVATRegNo", "XONT.VENTURA.SOXLR71.DAL");
             }
-            return dtResults;
+            return result;
         }
 
-        public ControlData GetControlData(string businessUnit, out MessageSet msg)
+        public async Task<Result<ControlData>>  GetControlData(string businessUnit)
         {
-            msg = null;
+
+            var result = new Result<ControlData>();
             var controlData = new ControlData();
+            dTable = new DataTable();
+
             try
             {
                 string query = @" SELECT AllowDecimalPointFlag, DecimalPlaces from RD.Control  where BusinessUnit= @BusinessUnit";
@@ -130,7 +133,7 @@ namespace XONT.VENTURA.SOXLR71.DAL
                 new SqlParameter("@BusinessUnit",SqlDbType.VarChar){ Value=businessUnit}
 
             };
-                dTable = ExecuteQuery(_userDbConnectionString, query, parameters);
+                dTable = await ExecuteQueryAsync(_userDbConnectionString, query, parameters);
                 if (dTable.Rows.Count > 0)
                 {
                     var row = dTable.Rows[0];
@@ -139,19 +142,22 @@ namespace XONT.VENTURA.SOXLR71.DAL
                     int.TryParse(row["DecimalPlaces"].ToString().Trim(), out decimalplace);
                     controlData.DecimalPlaces = decimalplace;
                 }
+                result.Data = controlData;
 
             }
             catch (Exception ex)
             {
-                msg = MessageCreate.CreateErrorMessage(0, ex, "GetControlData", "XONT.VENTURA.SOXLR71.DAL.dll");
+                result.Message = MessageCreate.CreateErrorMessage(0, ex, "GetControlData", "XONT.VENTURA.SOXLR71.DAL.dll");
             }
-            return controlData;
+            return result;
         }
 
-        public BusinessUnit GetBusinessUnit(string businessUnit, ref MessageSet msg)
+        public async Task<Result<BusinessUnit>>  GetBusinessUnit(string businessUnit)
         {
+
+            var result = new Result<BusinessUnit>();
             BusinessUnit bu = new BusinessUnit();
-            DataTable dtResult = new DataTable();
+            dTable = new DataTable();
             try
             {
                 string query = @"SELECT ISNULL(ZYBusinessUnit.BusinessUnit,'') AS BusinessUnit ,ISNULL(ZYBusinessUnit.BusinessUnitName,'') AS BusinessUnitName
@@ -167,11 +173,11 @@ namespace XONT.VENTURA.SOXLR71.DAL
                 {
                 new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit }
             };
-                dtResult = ExecuteQuery(_systemDbConnectionString, query, parameters);
+                dTable = await ExecuteQueryAsync(_systemDbConnectionString, query, parameters);
 
-                if (dtResult.Rows.Count > 0)
+                if (dTable.Rows.Count > 0)
                 {
-                    var row = dtResult.Rows[0];
+                    var row = dTable.Rows[0];
                     bu.BusinessUnitCode = row["Businessunit"].ToString().Trim();
                     bu.BusinessUnitName = row["BusinessUnitName"].ToString().Trim();
                     bu.AddressLine1 = row["AddressLine1"].ToString().Trim();
@@ -186,19 +192,18 @@ namespace XONT.VENTURA.SOXLR71.DAL
                     bu.WebAddress = row["WebAddress"].ToString().Trim();
                     bu.VATRegistrationNumber = row["VATRegistrationNumber"].ToString().Trim();
                 }
+                result.Data = bu;
             }
             catch (Exception ex)
             {
-                msg = MessageCreate.CreateErrorMessage(0, ex, "GetBusinessUnit", "XONT.VENTURA.SOXLR71.DAL.dll");
+                result.Message = MessageCreate.CreateErrorMessage(0, ex, "GetBusinessUnit", "XONT.VENTURA.SOXLR71.DAL.dll");
             }
-            return bu;
+            return result;
         }
 
-        public DataTable GetBusinessUnitLogo(string businessUnit, out MessageSet msg)
+        public async Task<Result<DataTable>> GetBusinessUnitLogo(string businessUnit)
         {
-            msg = null;
-            DataTable dTable = null;
-
+            var result = new Result<DataTable>();
             try
             {
                 string query = @"
@@ -212,43 +217,52 @@ namespace XONT.VENTURA.SOXLR71.DAL
                 new SqlParameter("@BusinessUnit", SqlDbType.VarChar) { Value = businessUnit }
             };
 
-                dTable = ExecuteQuery(_systemDbConnectionString, query, parameters);
+                result.Data = await ExecuteQueryAsync(_systemDbConnectionString, query, parameters);
             }
             catch (Exception ex)
             {
-                msg = MessageCreate.CreateErrorMessage(0, ex, "GetBusinessUnitLogo", "XONT.VENTURA.SOXLR71.DAL.dll");
+                result.Message = MessageCreate.CreateErrorMessage(0, ex, "GetBusinessUnitLogo", "XONT.VENTURA.SOXLR71.DAL.dll");
             }
 
-            return dTable;
+            return result;
         }
-        public DataTable ExecuteStoredProcedure(string connectionString, string spName, SqlParameter[] parameters)
+        public async Task<DataTable> ExecuteStoredProcedureAsync(string connectionString, string spName, SqlParameter[] parameters)
         {
             var dt = new DataTable();
+
             using (var conn = new SqlConnection(connectionString))
             using (var cmd = new SqlCommand(spName, conn))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddRange(parameters);
+                if (parameters != null)
+                    cmd.Parameters.AddRange(parameters);
 
-                using (var adapter = new SqlDataAdapter(cmd))
+                await conn.OpenAsync();
+
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    adapter.Fill(dt);
+                    dt.Load(reader);
                 }
             }
 
             return dt;
         }
 
-        public DataTable ExecuteQuery(string connectionString, string query, SqlParameter[] parameters)
+        public async Task<DataTable> ExecuteQueryAsync(string connectionString, string query, SqlParameter[] parameters)
         {
             var dt = new DataTable();
+
             using (var conn = new SqlConnection(connectionString))
             using (var cmd = new SqlCommand(query, conn))
             {
-                cmd.Parameters.AddRange(parameters);
-                using (var adapter = new SqlDataAdapter(cmd))
+                if (parameters != null)
+                    cmd.Parameters.AddRange(parameters);
+
+                await conn.OpenAsync();
+
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    adapter.Fill(dt);
+                    dt.Load(reader);
                 }
             }
 

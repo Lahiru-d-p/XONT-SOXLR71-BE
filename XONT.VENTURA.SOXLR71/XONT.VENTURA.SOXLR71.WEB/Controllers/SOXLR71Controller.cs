@@ -47,17 +47,17 @@ namespace XONT.VENTURA.SOXLR71
 
         [Route("~/api/SOXLR71/GetTerritoryPrompt")]
         [HttpGet]
-        public IActionResult GetTerritoryPrompt()
+        public async Task<IActionResult> GetTerritoryPrompt()
         {
             try
             {
-                DataTable dt = _bll.GetTerritoryPrompt(_user.BusinessUnit.Trim(), ref _msg);
+                var result = await _bll.GetTerritoryPrompt(_user.BusinessUnit.Trim());
 
-                if (_msg != null)
+                if (result.Message != null)
                 {
-                    return GetErrorMessageResponse(_msg);
+                    return GetErrorMessageResponse(result.Message);
                 }
-                return Ok(dt);
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {
@@ -67,17 +67,17 @@ namespace XONT.VENTURA.SOXLR71
 
         [Route("~/api/SOXLR71/GetDistributorPrompt")]
         [HttpGet]
-        public IActionResult GetDistributorPrompt()
+        public async Task<IActionResult> GetDistributorPrompt()
         {
             try
             {
-                DataTable dt = _bll.GetDistributorPrompt(_user.BusinessUnit.Trim(), ref _msg);
+                var result = await _bll.GetDistributorPrompt(_user.BusinessUnit.Trim());
 
-                if (_msg != null)
+                if (result.Message != null)
                 {
-                    return GetErrorMessageResponse(_msg);
+                    return GetErrorMessageResponse(result.Message);
                 }
-                return Ok(dt);
+                return Ok(result.Data);
             }
             catch (Exception ex)
             {
@@ -87,12 +87,12 @@ namespace XONT.VENTURA.SOXLR71
 
         [Route("~/api/SOXLR71/GenerateExcel")]
         [HttpPost]
-        public IActionResult GenerateExcel([FromBody] ExcelGenerationSelection selection)
+        public async Task<IActionResult> GenerateExcel([FromBody] ExcelGenerationSelection selection)
         {
             try
             {
-                byte[] excelBytes;
 
+                var excelResult = new Result<byte[]>();
                 selection.SelectionCriteria.ImagePath = Path.Combine(_env.ContentRootPath, "SOXLR71", "logo.jpg");
 
 
@@ -103,36 +103,46 @@ namespace XONT.VENTURA.SOXLR71
                     selection.SelectionCriteria.PowerUser = _user.PowerUser;
                 }
 
-                DataTable rptSource = new DataTable();
-                ControlData controlData = _bll.GetControlData(_user.BusinessUnit.Trim(), out _msg);
-                BusinessUnit businessUnit = _bll.GetBusinessUnit(_user.BusinessUnit, ref _msg);
+                var controlDataResult = await _bll.GetControlData(_user.BusinessUnit.Trim());
 
-                rptSource = _bll.GetReportData(selection.SelectionCriteria, out _msg);
+                if (controlDataResult.Message != null)
+                    return GetErrorMessageResponse(controlDataResult.Message);
+                
+                var businessUnitResult = await  _bll.GetBusinessUnit(_user.BusinessUnit);
 
-                if (_msg != null)
-                    return GetErrorMessageResponse(_msg);
+                if (businessUnitResult.Message != null)
+                    return GetErrorMessageResponse(businessUnitResult.Message);
 
-                if (rptSource.Rows.Count > 0)
+                var rptSourceResult = await _bll.GetReportData(selection.SelectionCriteria);
+
+                if (rptSourceResult.Message != null)
+                    return GetErrorMessageResponse(rptSourceResult.Message);
+
+                if (rptSourceResult.Data.Rows.Count > 0)
                 {
-                    DataTable dtLogo = _bll.GetBusinessUnitLogo(_user.BusinessUnit, out _msg);
+                    var dtLogoResult = await _bll.GetBusinessUnitLogo(_user.BusinessUnit);
 
-                    if (_msg != null)
-                        return GetErrorMessageResponse(_msg);
+                    if (dtLogoResult.Message != null)
+                        return GetErrorMessageResponse(dtLogoResult.Message);
 
                     var session = _httpContextAccessor.HttpContext?.Session;
                     if (session != null)
                     {
-                        session.SetString("Main_BusinessUnitLogo", JsonConvert.SerializeObject(dtLogo));
+                        session.SetString("Main_BusinessUnitLogo", JsonConvert.SerializeObject(dtLogoResult.Data));
                     }
 
                     string reportName = string.Format("SOXLR71{0}.xlsx", DateTime.Now.Ticks);
 
                     if (selection.SelectionCriteria.ReportDetailFlag)
-                        excelBytes = _bll.GenerateExcelByDetail(selection.SelectionCriteria, rptSource, dtLogo, reportName, controlData, businessUnit, ref _msg);
+                        excelResult = await _bll.GenerateExcelByDetail(selection.SelectionCriteria, rptSourceResult.Data, dtLogoResult.Data, reportName, controlDataResult.Data, businessUnitResult.Data);
                     else
-                        excelBytes = _bll.GenerateExcelBySummary(selection.SelectionCriteria, rptSource, dtLogo, reportName, controlData, businessUnit, ref _msg);
+                        excelResult = await _bll.GenerateExcelBySummary(selection.SelectionCriteria, rptSourceResult.Data, dtLogoResult.Data, reportName, controlDataResult.Data, businessUnitResult.Data);
 
-                    return Ok(new { fileContents = excelBytes, ReportName = reportName });
+
+                    if (excelResult.Message != null)
+                        return GetErrorMessageResponse(excelResult.Message);
+
+                    return Ok(new { fileContents = excelResult.Data, ReportName = reportName });
                 }
                 else
                 {

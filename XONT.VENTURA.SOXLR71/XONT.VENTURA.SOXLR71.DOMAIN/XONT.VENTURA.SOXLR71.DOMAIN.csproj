@@ -48,4 +48,9 @@
   <ItemGroup>
     <PackageReference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="XONT.Common.Message.MessageCreate">
+      <HintPath>..\..\..\..\..\XONT\XontResource\bin\XONT.Common.Message.MessageCreate.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

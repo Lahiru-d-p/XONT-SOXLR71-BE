@@ -5,6 +5,7 @@ using OfficeOpenXml.Style;
 using System;
 using System.Data;
 using System.IO;
+using System.Threading.Tasks;
 using XONT.Common.Message;
 using XONT.Ventura.AppConsole;
 using XONT.Ventura.Common.ConvertDateTime;
@@ -22,29 +23,30 @@ namespace XONT.VENTURA.SOXLR71.BLL
             _dal = dal;
         }
 
-        public DataTable GetTerritoryPrompt(string businessUnit, ref MessageSet msg)
+        public async Task<Result<DataTable>> GetTerritoryPrompt(string businessUnit)
         {
-            return _dal.GetTerritoryPrompt(businessUnit, ref msg);
+            return await _dal.GetTerritoryPrompt(businessUnit);
         }
 
-        public DataTable GetDistributorPrompt(string businessUnit, ref MessageSet msg)
+        public async Task<Result<DataTable>>  GetDistributorPrompt(string businessUnit)
         {
-            return _dal.GetDistributorPrompt(businessUnit, ref msg);
+            return await _dal.GetDistributorPrompt(businessUnit);
         }
 
-        public DataTable GetReportData(Selection selection, out MessageSet msg)
+        public async Task<Result<DataTable>> GetReportData(Selection selection)
         {
-            return _dal.GetReportData(selection, out msg);
+            return await _dal.GetReportData(selection);
         }
 
-        public byte[] GenerateExcelByDetail(Selection selection, DataTable dataTable, DataTable dtLogo, String reportName, ControlData controlData, BusinessUnit businessUnit, ref MessageSet msg)
+        public async Task<Result<byte[]>> GenerateExcelByDetail(Selection selection, DataTable dataTable, DataTable dtLogo, String reportName, ControlData controlData, BusinessUnit businessUnit)
         {
             byte[] byteArray = null;
+            var result = new Result<byte[]>();
 
             dataTable.DefaultView.Sort = "RetailerCode ASC, RetailerName ASC, InvoiceDate ASC, InvoiceNo ASC";
 
             DataTable data = dataTable.DefaultView.ToTable();
-            GetDistributorVATRegNo(selection, businessUnit.BusinessUnitCode, ref msg);
+            result.Message = await GetDistributorVATRegNo(selection, businessUnit.BusinessUnitCode );
 
             #region Excel Report
             ExcelPackage.License.SetNonCommercialOrganization("Xont");
@@ -150,18 +152,20 @@ namespace XONT.VENTURA.SOXLR71.BLL
                 #endregion
             }
             #endregion
-
-            return byteArray;
+            result.Data = byteArray;
+            return result;
         }
 
-        public byte[] GenerateExcelBySummary(Selection selection, DataTable dataTable, DataTable dtLogo, String reportName, ControlData controlData, BusinessUnit businessUnit, ref MessageSet msg)
+        public async Task<Result<byte[]>> GenerateExcelBySummary(Selection selection, DataTable dataTable, DataTable dtLogo, String reportName, ControlData controlData, BusinessUnit businessUnit)
         {
+
+            var result = new Result<byte[]>();
             byte[] byteArray = null;
 
             dataTable.DefaultView.Sort = "RetailerCode ASC, RetailerName ASC";
 
             DataTable data = dataTable.DefaultView.ToTable();
-            GetDistributorVATRegNo(selection, businessUnit.BusinessUnitCode, ref msg);
+            result.Message= await GetDistributorVATRegNo(selection, businessUnit.BusinessUnitCode );
 
             #region Excel Report
             ExcelPackage.License.SetNonCommercialOrganization("Xont");
@@ -273,7 +277,8 @@ namespace XONT.VENTURA.SOXLR71.BLL
                 #endregion
             }
             #endregion
-            return byteArray;
+            result.Data = byteArray;
+            return result;
         }
 
         private void DefineLogo(ExcelWorksheet worksheet, DataTable dtLogo, Selection selection)
@@ -425,9 +430,10 @@ namespace XONT.VENTURA.SOXLR71.BLL
             return tableRow;
         }
 
-        public void GetDistributorVATRegNo(Selection selection, string businessUnit, ref MessageSet msg)
+        public async Task<MessageSet> GetDistributorVATRegNo(Selection selection, string businessUnit)
         {
-            DataTable dt = _dal.GetDistributorVATRegNo(selection, businessUnit, ref msg);
+            var result = await _dal.GetDistributorVATRegNo(selection, businessUnit);
+            DataTable dt = result.Data;
             try
             {
                 if (selection.DistributorFlag && !selection.TerritoryFlag)
@@ -443,21 +449,22 @@ namespace XONT.VENTURA.SOXLR71.BLL
                 selection.DistributorVATRegistrationNo = "N/A";
                 selection.DistributorCode = "***All***";
             }
+            return result.Message;
         }
 
-        public ControlData GetControlData(string businessUnit, out MessageSet msg)
+        public async Task<Result<ControlData>> GetControlData(string businessUnit)
         {
-            return _dal.GetControlData(businessUnit, out msg);
+            return await _dal.GetControlData(businessUnit);
         }
 
-        public BusinessUnit GetBusinessUnit(string businessUnit, ref MessageSet msg)
+        public async Task<Result<BusinessUnit>>   GetBusinessUnit(string businessUnit)
         {
-            return _dal.GetBusinessUnit(businessUnit, ref msg);
+            return await _dal.GetBusinessUnit(businessUnit);
         }
 
-        public DataTable GetBusinessUnitLogo(string businessUnit, out MessageSet msg)
+        public async Task<Result<DataTable>> GetBusinessUnitLogo(string businessUnit)
         {
-            return _dal.GetBusinessUnitLogo(businessUnit, out msg);
+            return await _dal.GetBusinessUnitLogo(businessUnit);
         }
 
         private static void AddImage(ExcelWorksheet worksheet, int rowIndex, int columnIndex, string filePath)
